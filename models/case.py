@@ -1,5 +1,4 @@
-from models.workflow import Workflow, DevWorkflow
-from models.work import Work
+from models.workflow import Workflow
 
 
 class Case:
@@ -15,6 +14,7 @@ class Case:
         assert size is not None, "Size must be greater than zero"
         assert value is not None and value != 0, "Value must be non-zero"
         assert workflow is not None, "Must provide a workflow"
+        assert issubclass(type(workflow), Workflow) is not None, "Provided workflow is not of type Workflow"
         self.workflow = workflow
         self.workflow.set_case(self)
         self.size = size
