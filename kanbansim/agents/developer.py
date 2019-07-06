@@ -75,6 +75,16 @@ class Developer(Agent):
         'Random'
     ]
 
+    _review_strategies = [
+        'Reviews First',
+        'Random',
+        'Development Work First'
+    ]
+
+    @classmethod
+    def random_review_strategy(cls):
+        return np.random.choice(len(cls.strategies))
+
     def __init__(self, name, env, strategy, dev_pile, review_pile, merge_pile, conf: DeveloperConfig = None):
         self.name = name
         self.env = env

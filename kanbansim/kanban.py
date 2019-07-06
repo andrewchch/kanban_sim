@@ -222,7 +222,7 @@ for run in tqdm(range(NUM_RUNS)):
     total_values = []
 
     # Choose a random strategy for each run
-    strategy = np.random.randint(6)
+    dev_strategy = Developer.random_strategy()
     ba_strategy = BA.random_strategy()
     qa_strategy = QA.random_strategy()
     dev_review_choice_strategy = np.random.randint(3)
@@ -249,7 +249,7 @@ for run in tqdm(range(NUM_RUNS)):
 
     # Create a Run to store params
     run = Run(params={
-            'strategy': strategy,
+            'dev_strategy': dev_strategy,
             'ba_strategy': ba_strategy,
             'dev_review_choice_strategy': dev_review_choice_strategy
     })
@@ -272,7 +272,7 @@ for run in tqdm(range(NUM_RUNS)):
     for i in range(NUM_DEVELOPERS):
         developers.append(env.process(Developer('Developer %d' % i,
                                                 env,
-                                                strategy=strategy,
+                                                strategy=dev_strategy,
                                                 dev_pile=work_piles[wt.WORK_DEV],
                                                 review_pile=work_piles[wt.WORK_REVIEW],
                                                 merge_pile=work_piles[wt.WORK_MERGE]
