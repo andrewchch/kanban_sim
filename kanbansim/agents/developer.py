@@ -2,10 +2,10 @@ import logging
 import simpy
 import numpy as np
 
-from agents.agent import Agent
+from kanbansim.agents.agent import Agent
 from datetime import datetime
-from models import Work, DevWorkflow
-from workflows import WorkTypes as wt
+from kanbansim.models import Work, DevWorkflow
+from kanbansim.workflows import WorkTypes as wt
 
 
 def developer_of_work_item(item):
@@ -209,7 +209,7 @@ class Developer(Agent):
                 # Work on review or merge work until it's done
                 yield self.env.timeout(item_to_work_on.size())
                 item_to_work_on.finish(by=self.name)
-                logging.info('%s finished %s at %s' % (self.name, item_to_work_on, self.env.now))
+                logging.info('%s finished by %s at %s' % (self.name, item_to_work_on, self.env.now))
     
             else:
                 raise Exception('Invalid work type for dev: %s' % item_to_work_on.name)

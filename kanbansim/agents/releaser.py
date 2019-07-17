@@ -1,6 +1,6 @@
 import logging
-from agents.agent import Agent
-from models import Release
+from kanbansim.agents.agent import Agent
+from kanbansim.models import Release
 
 
 class Releaser(Agent):

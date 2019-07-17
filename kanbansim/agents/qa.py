@@ -1,5 +1,5 @@
 import logging
-from agents.agent import Agent
+from kanbansim.agents.agent import Agent
 
 
 class QA(Agent):
@@ -36,6 +36,6 @@ class QA(Agent):
 
             size = work.size()
             yield self.env.timeout(size)
+            logging.info('%s finished by %s at %s' % (self.name, work, self.env.now))
             work.finish(by=self.name)
-            logging.info('%s finished %s at %s' % (self.name, work, self.env.now))
 
