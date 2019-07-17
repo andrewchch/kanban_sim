@@ -1,4 +1,4 @@
-from models.workflow import Workflow
+from kanbansim.models.workflow import Workflow
 
 
 class Case:

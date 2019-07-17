@@ -56,6 +56,7 @@ class Work:
         :return:
         """
         assert (by or self.assignee) is not None, "Noone specified to work on the work item"
+        assert self.env is not None, "Must have an env to do work"
 
         # Set the start time if it hasn't already been set
         if not self.started:
@@ -71,7 +72,7 @@ class Work:
         if self.is_done():
             self.end_time = self.env.now
             # Signal to the workflow that we're finished
-            logging.info('%s finished %s at %s' % (self.work_done_by, self, self.env.now))
+            logging.info('%s finished by %s at %s' % (self, self.work_done_by, self.env.now))
             self.workflow.work_is_finished()
 
     def finish(self, by=None):
@@ -81,6 +82,7 @@ class Work:
         :return:
         """
         assert (by or self.assignee) is not None, "Noone specified to finish the workstep"
+        assert self.env is not None, "Must have an env to finish work"
 
         # Set the start time if it hasn't already been set
         if not self.started:
@@ -95,6 +97,7 @@ class Work:
         self.end_time = self.env.now
 
         # Signal to the workflow that we're finished
+        logging.info('%s finished by %s at %s' % (self, self.work_done_by, self.env.now))
         self.workflow.work_is_finished()
 
     def size(self):

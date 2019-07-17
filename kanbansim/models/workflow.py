@@ -1,4 +1,4 @@
-from models.work import Work
+from kanbansim.models.work import Work
 from functools import reduce
 from pubsub import pub
 
@@ -24,7 +24,7 @@ class Workflow:
         self.assignee = None
         self.env = None
         self.index = -1
-        self.name = None  # todo: future: workflows can be named for flow control
+        self.name = None
         self.case = case
         self.workflow = workflow
         self.start_time = None
@@ -70,18 +70,34 @@ class Workflow:
 
     def get_next_step(self):
         """
-        Go to the next state and return the corresponding workflow item if there's still work to do or None if the case
+        Get the next workflow step regardless of whether it is a workflow, single work item or list of work items.
+        :return: list of Workflow or Work items
+        """
+        if self.sequential:
+            if self.index < len(self.work_items) - 1:
+                self.index += 1
+                return [self.work_items[self.index]]
+        elif self.index < 0:
+            # Can run all work items in parallel so return all of them
+            self.index = 0
+            return self.work_items
+
+        return None
+
+    def get_next_work_items(self):
+        """
+        Go to the next state and return the corresponding work item if there's still work to do or None if the case
         is finished. If we're already on the last step of the workflow, return None.
         :return: current step as a list of one or more work items that can be run in parallel
         """
         if self.sequential:
-            if self.index < len(self.work_items):
+            if self.index < len(self.work_items) - 1:
                 self.index += 1
                 item = self.work_items[self.index]
 
                 # If the next item is a Workflow, return its next Work item
                 if issubclass(type(item), Workflow):
-                    return item.get_next_step()
+                    return item.get_next_work_items()
                 elif type(item) is Work:
                     return [item]
         elif self.index < 0:
@@ -90,7 +106,7 @@ class Workflow:
             next_items = []
             for item in self.work_items:
                 if issubclass(type(item), Workflow):
-                    next_items.extend(item.get_next_step())
+                    next_items.extend(item.get_next_work_items())
                 elif type(item) is Work:
                     next_items.append(item)
 
@@ -127,10 +143,7 @@ class Workflow:
                 pub.sendMessage('case_is_done', case=self.case)
         else:
             # Otherwise, get the next step and put it on the dispatch pile
-            items = self.get_next_step()
-            if items is not None:
-                for item in items:
-                    pub.sendMessage('dispatch_work', work=item)
+            pub.sendMessage('dispatch_next_work_items', workflow=self)
 
     def finish_current(self, by):
         """
@@ -155,6 +168,10 @@ class Workflow:
         :return:
         """
         return sum([w.size() for w in self.work_items])
+
+    def __str__(self):
+        return 'Workflow of size %d, sequential = %s, index = %d' % (self.size(), self.sequential, self.index)
+
 
 
 class DevWorkflow(Workflow):
