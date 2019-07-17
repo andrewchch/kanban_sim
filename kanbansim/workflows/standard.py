@@ -1,5 +1,5 @@
-from models import Work, Workflow, DevWorkflow
-from workflows import WorkTypes
+from kanbansim.models import Work, Workflow, DevWorkflow
+from kanbansim.workflows import WorkTypes
 
 
 class StandardWorkflowFactory:
